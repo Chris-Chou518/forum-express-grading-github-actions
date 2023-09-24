@@ -10,7 +10,7 @@ router.get('/signup', userController.signUpPage)
 router.post('/signup', userController.signUp)
 router.get('/signin', userController.signInPage)
 router.post('/signin', passport.authenticate('local', { failureRedirect: '/signin', failureFlash: true }), userController.signIn) // 注意是 post
-router.get('/logout', userController.logout)
+router.get('/logout', userController.logout) // 為何不用post?
 router.get('/restaurants', restController.getRestaurants)
 router.use('/', (req, res) => res.redirect('/restaurants')) //  影片是router.get
 router.use('/', generalErrorHandler) // 這邊為何要加'/' 以及為什麼不放在app.js

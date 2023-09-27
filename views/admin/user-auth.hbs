@@ -28,10 +28,12 @@
       <td>
         {{#if this.isAdmin}}
           <form action="/admin/users/{{this.id}}?_method=patch" method="POST" style="display: inline;">
+            <input type="hidden" name="isAdmin" value="false">
             <button type="submit" class="btn btn-light text-primary" onclick="return confirm(`確定要變更為一般使用者嗎`)">set as user</button>
           </form>
         {{else}}
           <form action="/admin/users/{{this.id}}?_method=patch" method="POST" style="display: inline;">
+            <input type="hidden" name="isAdmin" value="true">
             <button type="submit" class="btn btn-light text-primary" onclick="return confirm(`確定要變更為管理者嗎`)">set as admin</button>
           </form>
         {{/if}}

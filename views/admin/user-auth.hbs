@@ -1,0 +1,42 @@
+<h1>餐廳後台</h1>
+<a href="/admin/Restaurants">Restaurants</a>
+<span>|</span>
+<a href="/admin/users">Users</a>
+<table class="table align-middle">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Role</th>
+      <th scope="col">#</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each users}}
+    <tr>
+      <th scope="row">{{this.id}}</th>
+      <td>{{this.name}}</td>
+      <td>{{this.email}}</td>
+      <td>
+        {{#if this.isAdmin}}
+          admin
+        {{else}}
+          user  
+        {{/if}}
+      </td>
+      <td>
+        {{#if this.isAdmin}}
+          <form action="/admin/users/{{this.id}}?_method=patch" method="POST" style="display: inline;">
+            <button type="submit" class="btn btn-light text-primary" onclick="return confirm(`確定要變更為一般使用者嗎`)">set as user</button>
+          </form>
+        {{else}}
+          <form action="/admin/users/{{this.id}}?_method=patch" method="POST" style="display: inline;">
+            <button type="submit" class="btn btn-light text-primary" onclick="return confirm(`確定要變更為管理者嗎`)">set as admin</button>
+          </form>
+        {{/if}}
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>

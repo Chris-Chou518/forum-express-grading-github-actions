@@ -97,17 +97,16 @@ const adminController = {
       .catch(err => next(err))
   },
   patchUser: (req, res, next) => {
-    const { isAdmin } = req.body
     User.findByPk(req.params.id)
       .then(user => {
         if (!user) throw new Error('There is no the user')
-        if (user.email === 'root@example.com') throw new Error('此為終身管理者，不能變更權限')
+        if (user.email === 'root@example.com') throw new Error('禁止變更 root 權限')
         return user.update({
-          isAdmin: isAdmin
+          isAdmin: !user.isAdmin
         })
       })
       .then(() => {
-        req.flash('success_messages', '變更管理權限成功')
+        req.flash('success_messages', '使用者權限變更成功')
         res.redirect('/admin/users')
       })
       .catch(err => next(err))

@@ -27,6 +27,17 @@ const restaurantController = {
         })
       })
       .catch(err => next(err))
+  },
+  getDashboard: (req, res) => {
+    return Restaurant.findByPk(req.params.id, {
+      raw: true,
+      nest: true,
+      include: [Category]
+    })
+      .then(restaurant => {
+        if (!restaurant) throw new Error('Restaurant does nos exist!')
+        return res.render('dashboard', { restaurant })
+      })
   }
 }
 module.exports = restaurantController

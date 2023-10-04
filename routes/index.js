@@ -16,6 +16,7 @@ router.get('/logout', userController.logout) // 為何不用post? :都可 get會
 router.get('/restaurants/:id', authenticated, restController.getRestaurant)
 router.get('/restaurants/:id/dashboard', authenticated, restController.getDashboard)
 router.get('/restaurants', authenticated, restController.getRestaurants)
+router.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
 router.post('/comments', authenticated, commentController.postComment)
 router.use('/', (req, res) => res.redirect('/restaurants')) //  影片是router.get(只用於get請求) (use:可用於get.post.put...等請求)
 router.use('/', generalErrorHandler) // 這邊為何要加'/' 以及為什麼不放在app.js(都可)

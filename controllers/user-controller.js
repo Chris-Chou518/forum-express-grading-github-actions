@@ -37,24 +37,24 @@ const UserController = {
     res.redirect('/signin')
   },
   getUser: (req, res, next) => {
-    return User.findByPk(req.user.id, {
+    return User.findByPk(req.params.id, {
       raw: true
     })
       .then(user => {
         if (!user) throw new Error('無此使用者!')
-        return res.render('profile', {
+        return res.render('users/profile', {
           user
         })
       })
       .catch(err => next(err))
   },
   editUser: (req, res, next) => {
-    return User.findByPk(req.user.id, {
+    return User.findByPk(req.params.id, {
       raw: true
     })
       .then(user => {
         if (!user) throw new Error('無此使用者!')
-        return res.render('editProfile', {
+        return res.render('users/edit', {
           user
         })
       })
@@ -65,7 +65,7 @@ const UserController = {
     if (!name) throw new Error('User name is required!')
     const file = req.file
     return Promise.all([
-      User.findByPk(req.params.id),
+      User.findByPk(req.user.id),
       localFileHandler(file)
     ])
       .then(([user, filePath]) => {
@@ -76,8 +76,8 @@ const UserController = {
         })
       })
       .then(() => {
-        req.flash('success_messages', 'User profile was successfully to update')
-        return res.redirect('/users/:id')
+        req.flash('success_messages', '使用者資料編輯成功')
+        return res.redirect(`/users/${req.user.id}`)
       })
       .catch(err => next(err))
   }

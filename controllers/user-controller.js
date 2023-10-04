@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const db = require('../models')
 const { User } = db // const User = db.User的解構
+const { localFileHandler } = require('../helpers/file-helpers')
 const UserController = {
   signUpPage: (req, res, next) => {
     res.render('signup')
@@ -34,6 +35,51 @@ const UserController = {
     req.flash('success_messages', '登出成功！')
     req.logout()
     res.redirect('/signin')
+  },
+  getUser: (req, res, next) => {
+    return User.findByPk(req.user.id, {
+      raw: true
+    })
+      .then(user => {
+        if (!user) throw new Error('無此使用者!')
+        return res.render('profile', {
+          user
+        })
+      })
+      .catch(err => next(err))
+  },
+  editUser: (req, res, next) => {
+    return User.findByPk(req.user.id, {
+      raw: true
+    })
+      .then(user => {
+        if (!user) throw new Error('無此使用者!')
+        return res.render('editProfile', {
+          user
+        })
+      })
+      .catch(err => next(err))
+  },
+  putUser: (req, res, next) => {
+    const { name } = req.body
+    if (!name) throw new Error('User name is required!')
+    const file = req.file
+    return Promise.all([
+      User.findByPk(req.params.id),
+      localFileHandler(file)
+    ])
+      .then(([user, filePath]) => {
+        if (!user) throw new Error("User didn't exist")
+        return user.update({
+          name,
+          image: filePath || user.image
+        })
+      })
+      .then(() => {
+        req.flash('success_messages', 'User profile was successfully to update')
+        return res.redirect('/users/:id')
+      })
+      .catch(err => next(err))
   }
 }
 module.exports = UserController

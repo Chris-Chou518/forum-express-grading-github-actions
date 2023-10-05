@@ -75,7 +75,6 @@ const UserController = {
       .then(user => {
         if (!user) throw new Error("User didn't exist.")
         // res.render('users/profile', { user })
-
         const commentData = user.Comments ? user.Comments : []
         console.log('commentData', user.Comments)
         res.render('users/profile', {

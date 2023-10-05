@@ -1,7 +1,7 @@
-<div class="card mb-3" style="max-width: 1540px;">
+<div class="card mb-3" style="max-width: 1540px; max-height: 300px;">
   <div class="row g-0">
     <div class="col-md-4">
-      <img src="{{user.image}}" class="img-fluid rounded-start" alt="image">
+      <img src="{{user.image}}" style="max-height: 300px;" class="img-fluid rounded-start" alt="image">
     </div>
     <div class="col-md-8">
       <div class="card-body">
@@ -10,5 +10,30 @@
         <a href="/users/{{user.id}}/edit" class="btn btn-primary">Edit</a>
       </div>
     </div>
+  </div>
+</div>
+{{!-- <h3 class="card mb-3" style="max-width: 1540px; max-height: 100px;">
+  {{comments.count}}個已評論餐廳
+</h3>
+<div class="card mb-3" style="max-width: 1540px; max-height: 500px; min-height: 150px;">
+  <div class="row g-0 mx-2">
+    {{#each comments.rows}}
+    <a href="/restaurants/{{this.restaurantId}}" class="col-2 mx-2 my-2">
+      <img src="{{this.Restaurant.image}}" style="max-height: 300px;" class="img-fluid rounded-start" alt="image">
+    </a>
+    {{/each}}
+  </div>
+</div> --}}
+<div>
+  <div>
+    <h3>{{commentData.length}}已評論餐廳</h3>
+  </div>
+  <div style="background: white; height: auto" class="d-flex flex-row bd-highlight mb-3 align-items-center flex-wrap">
+    {{#each commentData}}
+    <a href="/restaurants/{{this.dataValues.restaurantId}}">
+      <img src="{{this.dataValues.Restaurant.dataValues.image}}" class="img-thumbnail ms-1"
+        style="max-width: 100px; max-height: 100px;" alt="{{this.dataValues.Restaurant.dataValues.name}}">
+    </a>
+    {{/each}}
   </div>
 </div>

@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
 const db = require('../models')
-const { User } = db // const User = db.User的解構
+const { User, Restaurant, Comment } = db // const User = db.User的解構
 const { localFileHandler } = require('../helpers/file-helpers')
 const UserController = {
   signUpPage: (req, res, next) => {
@@ -36,14 +36,51 @@ const UserController = {
     req.logout()
     res.redirect('/signin')
   },
+  // getUser: (req, res, next) => {
+  //   return Promise.all([
+  //     User.findByPk(req.params.id, {
+  //       raw: true
+  //     // nest: true,
+  //     // include: { model: Comment, include: { model: Restaurant } }
+  //     }),
+  //     Comment.findAndCountAll({
+  //       raw: true,
+  //       nest: true,
+  //       include: [User, Restaurant],
+  //       where: { userId: req.params.id }
+  //     })
+  //   ])
+  //     .then(([user, comments]) => {
+  //       if (!user) throw new Error('無此使用者!')
+  //       return res.render('users/profile', {
+  //         user,
+  //         comments
+  //       })
+  //     })
+  //     .catch(err => next(err))
+  // },
   getUser: (req, res, next) => {
     return User.findByPk(req.params.id, {
-      raw: true
+      // raw: true
+      include:
+        {
+          model: Comment,
+          include:
+            {
+              model: Restaurant,
+              attributes: ['image', 'name']
+            }
+        }
     })
       .then(user => {
-        if (!user) throw new Error('無此使用者!')
-        return res.render('users/profile', {
-          user
+        if (!user) throw new Error("User didn't exist.")
+        // res.render('users/profile', { user })
+
+        const commentData = user.Comments ? user.Comments : []
+        console.log('commentData', user.Comments)
+        res.render('users/profile', {
+          user: user.toJSON(),
+          commentData
         })
       })
       .catch(err => next(err))

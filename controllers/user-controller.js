@@ -77,11 +77,13 @@ const UserController = {
         // res.render('users/profile', { user })
         user = user.toJSON()
         const commentData = user.Comments ? user.Comments : []
-        console.log('commentData', user.Comments) // 觀察用
-        console.log('user', user) // 觀察用
+        // console.log('commentData', user.Comments) // 觀察用
+        // console.log('user', user) // 觀察用
+        const userselfId = req.user.id
         res.render('users/profile', {
           user: user,
-          commentData
+          commentData,
+          userselfId
         })
       })
       .catch(err => next(err))

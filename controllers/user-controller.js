@@ -75,10 +75,12 @@ const UserController = {
       .then(user => {
         if (!user) throw new Error("User didn't exist.")
         // res.render('users/profile', { user })
+        user = user.toJSON()
         const commentData = user.Comments ? user.Comments : []
-        console.log('commentData', user.Comments)
+        console.log('commentData', user.Comments) // 觀察用
+        console.log('user', user) // 觀察用
         res.render('users/profile', {
-          user: user.toJSON(),
+          user: user,
           commentData
         })
       })

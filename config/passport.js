@@ -39,5 +39,6 @@ passport.deserializeUser((id, cb) => {
       // console.log(user) 觀察資料
       return cb(null, user)
     })
+    .catch(err => cb(err))
 })
 module.exports = passport

@@ -2,14 +2,14 @@ const { Restaurant, User, Category } = require('../models')
 const { localFileHandler } = require('../helpers/file-helpers')
 const adminController = {
   getRestaurants: (req, res, next) => {
-    Restaurant.findAll({
+    return Restaurant.findAll({
       raw: true,
       nest: true,
       include: [Category]
     })
       .then(restaurants => {
         // console.log(restaurants)觀察資料類型(nest: true)
-        res.render('admin/restaurants', { restaurants })
+        return res.render('admin/restaurants', { restaurants })
       })
       .catch(err => next(err))
   },
@@ -24,7 +24,7 @@ const adminController = {
     const { name, tel, address, openingHours, description, categoryId } = req.body
     if (!name) throw new Error('Restaurant name is required!')
     const file = req.file // 把檔案取出來，也可以寫成const { file } = req
-    localFileHandler(file) // 把取出的檔案傳給 file-helper 處理後
+    return localFileHandler(file) // 把取出的檔案傳給 file-helper 處理後
       .then(filePath => Restaurant.create({ // 再 create 這筆餐廳資料
         name,
         tel,
@@ -37,19 +37,19 @@ const adminController = {
 
       .then(() => {
         req.flash('success_messages', 'Restaurant was successfully created!')
-        res.redirect('/admin/restaurants')
+        return res.redirect('/admin/restaurants')
       })
       .catch(err => next(err))
   },
   getRestaurant: (req, res, next) => {
-    Restaurant.findByPk(req.params.id, {
+    return Restaurant.findByPk(req.params.id, {
       raw: true,
       nest: true,
       include: [Category]
     })
       .then(restaurant => {
         if (!restaurant) throw new Error("Restaurant didn't exist!")
-        res.render('admin/restaurant', { restaurant })
+        return res.render('admin/restaurant', { restaurant })
       })
       .catch(err => next(err))
   },
@@ -59,7 +59,7 @@ const adminController = {
       Category.findAll({ raw: true })])
       .then(([restaurant, categories]) => {
         if (!restaurant) throw new Error("Restaurant didn't exist!")
-        res.render('admin/edit-restaurant', { restaurant, categories })
+        return res.render('admin/edit-restaurant', { restaurant, categories })
       })
       .catch(err => next(err))
   },
@@ -67,7 +67,7 @@ const adminController = {
     const { name, tel, address, openingHours, description, categoryId } = req.body
     if (!name) throw new Error('Restaurant name is required!')
     const file = req.file
-    Promise.all([
+    return Promise.all([
       Restaurant.findByPk(req.params.id), // 去資料庫查有沒有這間餐廳
       localFileHandler(file) // 把檔案傳到 file-helper 處理
     ])
@@ -85,12 +85,12 @@ const adminController = {
       })
       .then(() => {
         req.flash('success_messages', 'restaurant was successfully to update')
-        res.redirect('admin/restaurants')
+        return res.redirect('admin/restaurants')
       })
       .catch(err => next(err))
   },
   deleteRestaurant: (req, res, next) => {
-    Restaurant.findByPk(req.params.id)
+    return Restaurant.findByPk(req.params.id)
       .then(restaurant => {
         if (!restaurant) throw new Error("Restaurant didn't exist")
         return restaurant.destroy()
@@ -123,7 +123,7 @@ const adminController = {
       })
       .then(() => {
         req.flash('success_messages', '使用者權限變更成功')
-        res.redirect('/admin/users')
+        return res.redirect('/admin/users')
       })
       .catch(err => next(err))
   }

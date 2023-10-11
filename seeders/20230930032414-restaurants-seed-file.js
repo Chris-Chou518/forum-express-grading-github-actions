@@ -12,7 +12,7 @@ module.exports = {
      * }], {});
     */
     const categories = await queryInterface.sequelize.query(
-      'SELECT id FROM categories;',
+      'SELECT id FROM Categories;',
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     )
     await queryInterface.bulkInsert('Restaurants',

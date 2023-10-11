@@ -20,21 +20,21 @@ const UserController = {
       }))
       .then(() => {
         req.flash('success_messages', '成功註冊帳號')
-        res.redirect('/signin')
+        return res.redirect('/signin')
       })
       .catch(err => next(err))
   },
   signInPage: (req, res) => {
-    res.render('signin')
+    return res.render('signin')
   },
   signIn: (req, res) => {
     req.flash('success_messages', '成功登入！')
-    res.redirect('/restaurants')
+    return res.redirect('/restaurants')
   },
   logout: (req, res) => {
     req.flash('success_messages', '登出成功！')
     req.logout()
-    res.redirect('/signin')
+    return res.redirect('/signin')
   },
   // getUser: (req, res, next) => {
   //   return Promise.all([
@@ -80,7 +80,7 @@ const UserController = {
         // console.log('commentData', user.Comments) // 觀察用
         // console.log('user', user) // 觀察用
         // const userselfId = req.user.id  註解掉不然測試不會過
-        res.render('users/profile', {
+        return res.render('users/profile', {
           user: user,
           commentData
           // userselfId
@@ -202,7 +202,7 @@ const UserController = {
           followerCount: user.Followers.length,
           isFollowed: req.user.Followings.some(f => f.id === user.id)
         })).sort((a, b) => b.followerCount - a.followerCount)
-        res.render('top-users', { users: result })
+        return res.render('top-users', { users: result })
       })
       .catch(err => next(err))
   },

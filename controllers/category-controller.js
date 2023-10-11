@@ -1,7 +1,7 @@
 const { Category } = require('../models')
 const categoryController = {
   getCategories: (req, res, next) => {
-    Promise.all([
+    return Promise.all([
       Category.findAll({ raw: true }),
       req.params.id ? Category.findByPk(req.params.id, { raw: true }) : null
     ])

@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs')
-const db = require('../models')
+const db = require('../../models')
 const { User, Restaurant, Comment, Favorite, Like, Followship } = db // const User = db.User的解構
-const { localFileHandler } = require('../helpers/file-helpers')
+const { localFileHandler } = require('../../helpers/file-helpers')
 const UserController = {
   signUpPage: (req, res, next) => {
     res.render('signup')

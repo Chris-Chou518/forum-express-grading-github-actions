@@ -13,25 +13,12 @@ const adminController = {
       .catch(err => next(err))
   },
   postRestaurant: (req, res, next) => {
-    const { name, tel, address, openingHours, description, categoryId } = req.body
-    if (!name) throw new Error('Restaurant name is required!')
-    const file = req.file // 把檔案取出來，也可以寫成const { file } = req
-    return localFileHandler(file) // 把取出的檔案傳給 file-helper 處理後
-      .then(filePath => Restaurant.create({ // 再 create 這筆餐廳資料
-        name,
-        tel,
-        address,
-        openingHours,
-        description,
-        image: filePath || null,
-        categoryId
-      }))
-
-      .then(() => {
-        req.flash('success_messages', 'Restaurant was successfully created!')
-        return res.redirect('/admin/restaurants')
-      })
-      .catch(err => next(err))
+    adminServices.postRestaurant(req, (err, data) => {
+      if (err) next(err)
+      req.flash('success_messages', 'restaurant was successfully created')
+      req.session.createdData = data
+      return res.redirect('/admin/restaurants')
+    })
   },
   getRestaurant: (req, res, next) => {
     return Restaurant.findByPk(req.params.id, {

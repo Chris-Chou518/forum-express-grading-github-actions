@@ -27,9 +27,10 @@ passport.use(new LocalStrategy({
 // set up passport jwtStrategy
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.JWT_SECRET
+  secretOrKey: process.env.JWT_SECRET,
+  passReqToCallback: true
 }
-passport.use(new JwtStrategy(jwtOptions, (jwtPayload, cb) => {
+passport.use(new JwtStrategy(jwtOptions, (req, jwtPayload, cb) => {
   User.findByPk(jwtPayload.id, {
     include: [
       { model: Restaurant, as: 'FavoritedRestaurants' },
@@ -39,7 +40,8 @@ passport.use(new JwtStrategy(jwtOptions, (jwtPayload, cb) => {
     ]
   })
     .then(user => {
-      cb(null, user)
+      req.user = user
+      return cb(null, user)
     })
     .catch(err => cb(err))
 }))

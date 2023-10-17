@@ -7,6 +7,7 @@ const { authenticated, authenticatedAdmin } = require('../../middleware/api-auth
 const { apiErrorHandler } = require('../../middleware/error-handler')
 const admin = require('./modules/admin')
 router.use('/admin', authenticated, authenticatedAdmin, admin)
+router.post('/signup', userController.signUp)
 router.post('/signin', passport.authenticate('local', { session: false }), userController.signIn)
 router.get('/restaurants', authenticated, restController.getRestaurants)
 router.use('/', apiErrorHandler)

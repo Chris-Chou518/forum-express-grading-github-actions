@@ -1,4 +1,4 @@
-const { Restaurant, User, Category } = require('../../models')
+const { Restaurant, Category } = require('../../models')
 const adminServices = require('../../services/admin-services')
 const adminController = {
   getRestaurants: (req, res, next) => {
@@ -48,31 +48,14 @@ const adminController = {
     // })
   },
   getUsers: (req, res, next) => {
-    return User.findAll({
-      raw: true
-    })
-      .then(users => {
-        return res.render('admin/user-auth', { users })
-      })
-      .catch(err => next(err))
+    adminServices.getUsers(req, (err, data) => err ? next(err) : res.render('admin/user-auth', data))
   },
   patchUser: (req, res, next) => {
-    return User.findByPk(req.params.id)
-      .then(user => {
-        if (!user) throw new Error('There is no the user')
-        if (user.email === 'root@example.com') {
-          req.flash('error_messages', '禁止變更 root 權限')
-          return res.redirect('back')
-        }
-        return user.update({
-          isAdmin: !user.isAdmin
-        })
-      })
-      .then(() => {
-        req.flash('success_messages', '使用者權限變更成功')
-        return res.redirect('/admin/users')
-      })
-      .catch(err => next(err))
+    adminServices.patchUser(req, (err, data) => {
+      if (err) return next(err)
+      req.flash('success_messages', '使用者權限變更成功')
+      return res.redirect('/admin/users')
+    })
   }
 }
 module.exports = adminController

@@ -1,4 +1,4 @@
-const { Restaurant, Category } = require('../models')
+const { Restaurant, Category, User } = require('../models')
 const { localFileHandler } = require('../helpers/file-helpers')
 const adminServices = {
   getRestaurants: (req, cb) => {
@@ -76,6 +76,34 @@ const adminServices = {
       })
       .then(updatedRestaurant => {
         return cb(null, { restaurant: updatedRestaurant })
+      })
+      .catch(err => cb(err))
+  },
+  getUsers: (req, cb) => {
+    return User.findAll({
+      raw: true
+    })
+      .then(users => {
+        return cb(null, { users })
+      })
+      .catch(err => cb(err))
+  },
+  patchUser: (req, cb) => {
+    return User.findByPk(req.params.id)
+      .then(user => {
+        if (!user) throw new Error('There is no the user')
+        if (user.email === 'root@example.com') throw new Error('禁止變更 root 權限')
+        // {
+        //   req.flash('error_messages', '禁止變更 root 權限')
+        //   return res.redirect('back')
+        // }
+        return user.update({
+          isAdmin: !user.isAdmin
+        })
+      })
+      .then(updatedUser => {
+        // req.flash('success_messages', '使用者權限變更成功')
+        return cb(null, { user: updatedUser.toJSON() })
       })
       .catch(err => cb(err))
   }

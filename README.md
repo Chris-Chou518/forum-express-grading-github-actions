@@ -1,5 +1,9 @@
 # README
 
+## Cover
+
+![img-01](https://github.com/Chris-Chou518/forum-express-grading-github-actions/blob/main/github-pic/cover.png)
+
 ## Feature
 
 ### User
@@ -20,7 +24,8 @@
 * Can manage the category of restaurants 
 * Can manage the administrative permission of users 
 
-### Initialize
+## Initialize
+
 ```
 git clone https://github.com/Chris-Chou518/forum-express-grading-github-actions.git
 ```
@@ -68,4 +73,5 @@ App is listening on port 3000
   * password: 12345678
 
 ### Prerequisites
+
 Please refer package.json file.Thank you!

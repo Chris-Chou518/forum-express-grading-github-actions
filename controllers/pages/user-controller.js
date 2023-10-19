@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs')
 const db = require('../../models')
-const { User, Restaurant, Comment, Favorite, Like, Followship } = db // const User = db.User的解構
-const { localFileHandler } = require('../../helpers/file-helpers')
+const { User, Restaurant, Favorite, Like, Followship } = db // const User = db.User的解構
+const userServices = require('../../services/user-services')
 const UserController = {
   signUpPage: (req, res, next) => {
     res.render('signup')
@@ -36,57 +36,8 @@ const UserController = {
     req.logout()
     return res.redirect('/signin')
   },
-  // getUser: (req, res, next) => {
-  //   return Promise.all([
-  //     User.findByPk(req.params.id, {
-  //       raw: true
-  //     // nest: true,
-  //     // include: { model: Comment, include: { model: Restaurant } }
-  //     }),
-  //     Comment.findAndCountAll({
-  //       raw: true,
-  //       nest: true,
-  //       include: [User, Restaurant],
-  //       where: { userId: req.params.id }
-  //     })
-  //   ])
-  //     .then(([user, comments]) => {
-  //       if (!user) throw new Error('無此使用者!')
-  //       return res.render('users/profile', {
-  //         user,
-  //         comments
-  //       })
-  //     })
-  //     .catch(err => next(err))
-  // },
   getUser: (req, res, next) => {
-    return User.findByPk(req.params.id, {
-      // raw: true
-      include:
-        {
-          model: Comment,
-          include:
-            {
-              model: Restaurant,
-              attributes: ['image', 'name']
-            }
-        }
-    })
-      .then(user => {
-        if (!user) throw new Error("User didn't exist.")
-        // res.render('users/profile', { user })
-        user = user.toJSON()
-        const commentData = user.Comments ? user.Comments : []
-        // console.log('commentData', user.Comments) // 觀察用
-        // console.log('user', user) // 觀察用
-        // const userselfId = req.user.id  註解掉不然測試不會過
-        return res.render('users/profile', {
-          user: user,
-          commentData
-          // userselfId
-        })
-      })
-      .catch(err => next(err))
+    userServices.getUser(req, (err, data) => err ? next(err) : res.render('users/profile', data))
   },
   editUser: (req, res, next) => {
     return User.findByPk(req.params.id, {
@@ -101,25 +52,11 @@ const UserController = {
       .catch(err => next(err))
   },
   putUser: (req, res, next) => {
-    const { name } = req.body
-    if (!name) throw new Error('User name is required!')
-    const file = req.file
-    return Promise.all([
-      User.findByPk(req.user.id),
-      localFileHandler(file)
-    ])
-      .then(([user, filePath]) => {
-        if (!user) throw new Error("User didn't exist")
-        return user.update({
-          name,
-          image: filePath || user.image
-        })
-      })
-      .then(() => {
-        req.flash('success_messages', '使用者資料編輯成功')
-        return res.redirect(`/users/${req.user.id}`)
-      })
-      .catch(err => next(err))
+    userServices.putUser(req, (err, data) => {
+      if (err) return next(err)
+      req.flash('success_messages', '使用者資料編輯成功')
+      return res.redirect(`/users/${req.user.id}`)
+    })
   },
   addFavorite: (req, res, next) => {
     const { restaurantId } = req.params
@@ -193,18 +130,7 @@ const UserController = {
       .catch(err => next(err))
   },
   getTopUsers: (req, res, next) => {
-    return User.findAll({
-      include: [{ model: User, as: 'Followers' }]
-    })
-      .then(users => {
-        const result = users.map(user => ({ // arrow function加小括弧可確保return a object
-          ...user.toJSON(),
-          followerCount: user.Followers.length,
-          isFollowed: req.user.Followings.some(f => f.id === user.id)
-        })).sort((a, b) => b.followerCount - a.followerCount)
-        return res.render('top-users', { users: result })
-      })
-      .catch(err => next(err))
+    userServices.getTopUsers(req, (err, data) => err ? next(err) : res.render('top-users', data))
   },
   addFollowing: (req, res, next) => {
     return Promise.all([

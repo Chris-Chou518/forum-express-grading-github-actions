@@ -1,46 +1,62 @@
 # README
 
-1. Fork
-2. git clone
+## Feature
 
-## 初始化
+### User
+* Login, logout and sign up
+* Read all restaurants and their detail information
+* Categorize restaurants when reading all restaurants
+* Give comments to restaurants
+* Collect favorite restaurants
+* Look the newest 10 restaurants
+* Look the newest 10 comments
+* Edit the own profile
+* Check restaurants which the user gave comments
+* A user can follow others
+
+### Admin
+* Only admin can use management system
+* Can manage the information of restaurants 
+* Can manage the category of restaurants 
+* Can manage the administrative permission of users 
+
 ### Initialize
 ```
-git remote add upstream https://github.com/ALPHACamp/forum-express-grading.git  # 建立上游連線
-npm install
+git clone https://github.com/Chris-Chou518/forum-express-grading-github-actions.git
 ```
 
-### 設定資料庫
-需要與 config/config.json 一致
+### Set up database
+We can refer config/config.json
 
 ```
 create database forum;
 ```
 
-### 執行測試
+### Install
 ```
-npm run test
-```
-
-## 下載作業規格
-以 R01 為例
-
-```
-git checkout -b R01           # 開新分支
-git merge origin/R01-test     # 下載作業規格
-npm run test                  # 直到綠燈全亮
-
-git add .
-git commit -m "...."
+npm install
 ```
 
-## 繳交作業
-
+### create .env and set JWT_SECRET as what you want
 ```
-git push origin R01           # 上傳本地進度
+touch .env
 ```
 
-接著改成到 GitHub 來發 PR。
+### Execute migration
+```
+npx sequelize db:migrate
+```
+
+### Run seed
+```
+npx sequelize db:seed:all  
+```
+
+### Execute application
+```
+npm run dev
+```
+App is listening on port 3000
 
 ## 共用帳號
 請一律設定下面 2 組帳號以利驗收：
@@ -50,3 +66,6 @@ git push origin R01           # 上傳本地進度
 * 第二組帳號沒有 admin 權限：
   * email: user1@example.com
   * password: 12345678
+
+### Prerequisites
+Please refer package.json file.Thank you!

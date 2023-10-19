@@ -1,8 +1,8 @@
 const bcrypt = require('bcryptjs')
 const db = require('../../models')
-const { User, Restaurant, Favorite, Like, Followship } = db // const User = db.User的解構
+const { User } = db // const User = db.User的解構
 const userServices = require('../../services/user-services')
-const UserController = {
+const userController = {
   signUpPage: (req, res, next) => {
     res.render('signup')
   },
@@ -59,113 +59,25 @@ const UserController = {
     })
   },
   addFavorite: (req, res, next) => {
-    const { restaurantId } = req.params
-    return Promise.all([
-      Restaurant.findByPk(restaurantId),
-      Favorite.findOne({
-        where: {
-          userId: req.user.id,
-          restaurantId
-        }
-      })
-    ])
-      .then(([restaurant, favorite]) => {
-        if (!restaurant) throw new Error("restaurant didn't exist")
-        if (favorite) throw new Error('You have favorited this restaurant!')
-        return Favorite.create({
-          userId: req.user.id,
-          restaurantId
-        })
-      })
-      .then(() => res.redirect('back'))
-      .catch(err => next(err))
+    userServices.addFavorite(req, (err, data) => err ? next(err) : res.redirect('back'))
   },
   removeFavorite: (req, res, next) => {
-    return Favorite.findOne({
-      where: {
-        userId: req.user.id,
-        restaurantId: req.params.restaurantId
-      }
-    })
-      .then(favorite => {
-        if (!favorite) throw new Error("You haven't favorited this restaurant")
-        return favorite.destroy()
-      })
-      .then(() => res.redirect('back'))
-      .catch(err => next(err))
+    userServices.removeFavorite(req, (err, data) => err ? next(err) : res.redirect('back'))
   },
   addLike: (req, res, next) => {
-    return Promise.all([
-      Restaurant.findByPk(req.params.restaurantId),
-      Like.findOne({
-        where: {
-          userId: req.user.id,
-          restaurantId: req.params.restaurantId
-        }
-      })
-    ])
-      .then(([restaurant, like]) => {
-        if (!restaurant) throw new Error("Restaurant don't exist")
-        if (like) throw new Error('You have liked this restaurant!')
-        return Like.create({
-          userId: req.user.id,
-          restaurantId: req.params.restaurantId
-        })
-      })
-      .then(like => res.redirect('back'))
-      .catch(err => next(err))
+    userServices.addLike(req, (err, data) => err ? next(err) : res.redirect('back'))
   },
   removeLike: (req, res, next) => {
-    return Like.findOne({
-      where: {
-        userId: req.user.id,
-        restaurantId: req.params.restaurantId
-      }
-    })
-      .then(like => {
-        if (!like) throw new Error("You haven't liked this restaurant!")
-        return like.destroy()
-      })
-      .then(() => res.redirect('back'))
-      .catch(err => next(err))
+    userServices.removeLike(req, (err, data) => err ? next(err) : res.redirect('back'))
   },
   getTopUsers: (req, res, next) => {
     userServices.getTopUsers(req, (err, data) => err ? next(err) : res.render('top-users', data))
   },
   addFollowing: (req, res, next) => {
-    return Promise.all([
-      User.findByPk(req.params.userId),
-      Followship.findOne({
-        where: {
-          followerId: req.user.id,
-          followingId: req.params.userId
-        }
-      })
-    ])
-      .then(([user, followship]) => {
-        if (!user) throw new Error("User didn't exist")
-        if (followship) throw new Error('You are already following this user!')
-        return Followship.create({
-          followerId: req.user.id,
-          followingId: req.params.userId
-        })
-      })
-      .then(() => res.redirect('back'))
-      .catch(err => next(err))
+    userServices.addFollowing(req, (err, data) => err ? next(err) : res.redirect('back'))
   },
   removeFollowing: (req, res, next) => {
-    return Followship.findOne({
-      where: {
-        followerId: req.user.id,
-        followingId: req.params.userId
-      }
-    })
-      .then(followship => {
-        if (!followship) throw new Error("You haven't followed this user!")
-        return followship.destroy()
-      })
-      .then(() => res.redirect('back'))
-      .catch(err => next(err))
+    userServices.removeFollowing(req, (err, data) => err ? next(err) : res.redirect('back'))
   }
 }
-module.exports = UserController
+module.exports = userController

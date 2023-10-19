@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
 const db = require('../models')
-const { User, Restaurant, Comment } = db
+const { User, Restaurant, Comment, Favorite, Followship, Like } = db
 const { localFileHandler } = require('../helpers/file-helpers')
 const userServices = {
   signUp: (req, cb) => {
@@ -84,6 +84,112 @@ const userServices = {
         // req.flash('success_messages', '使用者資料編輯成功')
         return cb(null, { user: updatedUser })
       })
+      .catch(err => cb(err))
+  },
+  addFavorite: (req, cb) => {
+    const { restaurantId } = req.params
+    return Promise.all([
+      Restaurant.findByPk(restaurantId),
+      Favorite.findOne({
+        where: {
+          userId: req.user.id,
+          restaurantId
+        }
+      })
+    ])
+      .then(([restaurant, favorite]) => {
+        if (!restaurant) throw new Error("restaurant didn't exist")
+        if (favorite) throw new Error('You have favorited this restaurant!')
+        return Favorite.create({
+          userId: req.user.id,
+          restaurantId
+        })
+      })
+      .then(favorite => cb(null, { favorite }))
+      .catch(err => cb(err))
+  },
+  removeFavorite: (req, cb) => {
+    return Favorite.findOne({
+      where: {
+        userId: req.user.id,
+        restaurantId: req.params.restaurantId
+      }
+    })
+      .then(favorite => {
+        if (!favorite) throw new Error("You haven't favorited this restaurant")
+        return favorite.destroy()
+      })
+      .then(removedFavorite => cb(null, { favorite: removedFavorite }))
+      .catch(err => cb(err))
+  },
+  addLike: (req, cb) => {
+    return Promise.all([
+      Restaurant.findByPk(req.params.restaurantId),
+      Like.findOne({
+        where: {
+          userId: req.user.id,
+          restaurantId: req.params.restaurantId
+        }
+      })
+    ])
+      .then(([restaurant, like]) => {
+        if (!restaurant) throw new Error("Restaurant don't exist")
+        if (like) throw new Error('You have liked this restaurant!')
+        return Like.create({
+          userId: req.user.id,
+          restaurantId: req.params.restaurantId
+        })
+      })
+      .then(like => cb(null, { like }))
+      .catch(err => cb(err))
+  },
+  removeLike: (req, cb) => {
+    return Like.findOne({
+      where: {
+        userId: req.user.id,
+        restaurantId: req.params.restaurantId
+      }
+    })
+      .then(like => {
+        if (!like) throw new Error("You haven't liked this restaurant!")
+        return like.destroy()
+      })
+      .then(removedLike => cb(null, { like: removedLike }))
+      .catch(err => cb(err))
+  },
+  addFollowing: (req, cb) => {
+    return Promise.all([
+      User.findByPk(req.params.userId),
+      Followship.findOne({
+        where: {
+          followerId: req.user.id,
+          followingId: req.params.userId
+        }
+      })
+    ])
+      .then(([user, followship]) => {
+        if (!user) throw new Error("User didn't exist")
+        if (followship) throw new Error('You are already following this user!')
+        return Followship.create({
+          followerId: req.user.id,
+          followingId: req.params.userId
+        })
+      })
+      .then(followship => cb(null, { followship }))
+      .catch(err => cb(err))
+  },
+  removeFollowing: (req, cb) => {
+    return Followship.findOne({
+      where: {
+        followerId: req.user.id,
+        followingId: req.params.userId
+      }
+    })
+      .then(followship => {
+        if (!followship) throw new Error("You haven't followed this user!")
+        return followship.destroy()
+      })
+      .then(removedFollowship => cb(null, { followship: removedFollowship }))
       .catch(err => cb(err))
   }
 }

@@ -1,16 +1,30 @@
 const express = require('express')
 const router = express.Router()
-const passport = require('../../config/passport')
+// const passport = require('../../config/passport')
 const restController = require('../../controllers/apis/restaurant-controller')
 const userController = require('../../controllers/apis/user-controller')
 const commentController = require('../../controllers/apis/comment-controller')
 const { authenticated, authenticatedAdmin } = require('../../middleware/api-auth')
-const { apiErrorHandler } = require('../../middleware/error-handler')
+const { apiErrorHandler, signinWithErrorHandler } = require('../../middleware/error-handler')
 const upload = require('../../middleware/multer')
 const admin = require('./modules/admin')
 router.use('/admin', authenticated, authenticatedAdmin, admin)
 router.post('/signup', userController.signUp)
-router.post('/signin', passport.authenticate('local', { session: false }), userController.signIn)
+// router.post('/signin', passport.authenticate('local', { session: false }), userController.signIn) no handle with error
+router.post('/signin', signinWithErrorHandler, userController.signIn)
+// different style
+// router.post('/signin', function (req, res, next) {
+//   passport.authenticate('local', { session: false }, function (err, user, info) {
+//     if (err) {
+//       return next(err)
+//     }
+//     if (!user) {
+//       return res.status(401).json({ message: 'info.message' })
+//     }
+//     req.logIn(user)
+//     next()
+//   })(req, res, next)
+// }, userController.signIn)
 router.get('/restaurants', authenticated, restController.getRestaurants)
 router.get('/restaurants/feeds', authenticated, restController.getFeeds)
 router.get('/restaurants/top', authenticated, restController.getTopRestaurants)

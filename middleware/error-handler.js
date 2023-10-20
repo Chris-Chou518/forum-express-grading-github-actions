@@ -1,3 +1,4 @@
+const passport = require('../config/passport')
 module.exports = {
   generalErrorHandler (err, req, res, next) {
     if (err instanceof Error) {
@@ -21,5 +22,20 @@ module.exports = {
       })
     }
     next(err)
+  },
+  signinWithErrorHandler (req, res, next) {
+    passport.authenticate('local', { session: false }, function (err, user) {
+      if (err) {
+        return next(err)
+      }
+      if (!user) {
+        return res.status(401).json({
+          status: 'error',
+          message: 'Wrong email or password'
+        })
+      }
+      req.logIn(user)
+      next()
+    })(req, res, next)
   }
 }
